@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController
 @RequestMapping({"/api/v1/movies", "/api/v1/movie"})
@@ -42,6 +44,23 @@ public class MoiveController {
     @GetMapping({"/all"})
     public ResponseEntity<java.util.List<MovieDto>> getAllMoviesHandler() {
         return new ResponseEntity<>(movieService.getAllMovies(),HttpStatus.OK);
+    }
+
+    @PutMapping("/update/{movieId}")
+    public ResponseEntity<MovieDto> updateMovieHandler(@PathVariable Integer movieId,@RequestPart MultipartFile file,@RequestPart String movieDtoObj) throws IOException {
+        
+        if(file.isEmpty())
+            file=null;
+
+        MovieDto dto= convertToMovieDto(movieDtoObj);
+
+        return new ResponseEntity<>(movieService.updateMovie(movieId,dto,file),HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/delete/{movieId}")
+    public ResponseEntity<String> deleteMovieHandler(@PathVariable Integer movieId)throws IOException{
+        return ResponseEntity.ok(movieService.deleteMovie(movieId));
     }
 
     private MovieDto convertToMovieDto(String movieDto)throws JsonProcessingException {
